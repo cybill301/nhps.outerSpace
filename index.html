@@ -71,26 +71,26 @@
             overflow-y: auto;
         }
 
-        /* 注音符號與聲調樣式 - 最終修正版 */
+        /* 注音符號與聲調樣式 - 針對 iOS 裝置的相容性修正 */
         ruby {
             position: relative;
             display: inline-block;
-            /* 讓父層(h1, p)決定字體大小 */
-            padding-right: 1em; /* 預留給注音和聲調的空間 */
-            margin: 0 0.15em;
+            /* 移除 padding-right，改用 margin-right 為注音騰出空間，避免與下一個字重疊 */
+            margin: 0 1em 0 0.15em; 
             vertical-align: middle;
         }
 
         rt {
             position: absolute;
             top: 50%;
-            right: 0.5em; /* 將注音放在預留空間的中間 */
+            /* 使用負值 'right' 將注音定位在國字的右側外部，以解決 iOS 上的定位錯誤 */
+            right: -0.9em;
             transform: translateY(-50%);
             writing-mode: vertical-rl;
             text-orientation: upright;
             -webkit-writing-mode: vertical-rl;
             -webkit-text-orientation: upright;
-            font-size: 0.5em; /* 注音字體縮小 */
+            font-size: 0.4em; /* 注音字體縮小 */
             color: #c0c0ff;
             letter-spacing: 0.1em;
             line-height: 1;
@@ -100,7 +100,8 @@
         .tone {
             position: absolute;
             top: 50%;
-            right: 0.1em; /* 將聲調放在最右邊 */
+            /* 使用更大的負值，將聲調放在注音的右邊 */
+            right: -1.3em; 
             transform: translateY(-50%);
             font-size: 0.45em; /* 聲調符號大小 */
             color: #c0c0ff;
@@ -435,6 +436,7 @@
     </script>
 </body>
 </html>
+
 
 
 
