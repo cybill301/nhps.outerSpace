@@ -118,7 +118,7 @@
         .quiz-option {
             transition: all 0.2s ease-in-out;
         }
-        .quiz-option:hover {
+        .quiz-option:hover:not(:disabled) {
             transform: scale(1.05);
             background-color: #4a4a8a;
         }
@@ -138,6 +138,40 @@
         <main id="planets-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <!-- JavaScript 會在這裡生成行星卡片 -->
         </main>
+        
+        <!-- 天文閱讀區 -->
+        <section id="reading-section" class="mt-16 bg-slate-800/50 p-6 rounded-2xl max-w-3xl mx-auto">
+            <h2 id="reading-title" class="text-3xl font-bold text-center mb-6 text-yellow-300">
+                <!-- JS populates -->
+            </h2>
+            <div class="space-y-6 text-lg">
+                <div>
+                    <h3 id="wuxing-title" class="text-xl font-semibold text-cyan-300 mb-2">
+                        <!-- JS populates -->
+                    </h3>
+                    <ul class="list-disc list-inside space-y-2">
+                        <li id="wuxing-mu"></li>
+                        <li id="wuxing-huo"></li>
+                        <li id="wuxing-tu"></li>
+                        <li id="wuxing-jin"></li>
+                        <li id="wuxing-shui"></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 id="naming-title" class="text-xl font-semibold text-cyan-300 mb-2">
+                        <!-- JS populates -->
+                    </h3>
+                    <p id="naming-p1" class="leading-relaxed tracking-wider"></p>
+                    <p id="naming-p2" class="leading-relaxed tracking-wider mt-4"></p>
+                    <p id="naming-p3" class="leading-relaxed tracking-wider mt-4"></p>
+                    <ul class="list-none space-y-2 mt-4 pl-4 border-l-2 border-cyan-400">
+                         <li id="uranus-info"></li>
+                         <li id="neptune-info"></li>
+                         <li id="pluto-info"></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <!-- 小測驗區 -->
         <section id="quiz-section" class="mt-16 bg-slate-800/50 p-6 rounded-2xl max-w-3xl mx-auto">
@@ -146,6 +180,11 @@
             </h2>
             <div id="quiz-container" class="space-y-8">
                 <!-- JavaScript 會在這裡生成測驗問題 -->
+            </div>
+            <div class="text-center mt-8">
+                <button id="reset-quiz-btn" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                    重新作答
+                </button>
             </div>
         </section>
 
@@ -182,6 +221,26 @@
                 question: "哪一顆行星的名字不是來自神話故事，而是「土地」的意思？",
                 options: ["土星", "地球", "天王星"],
                 answer: "地球"
+            },
+            {
+                question: "哪一種 顏色 代表「火」？",
+                options: ["黃色", "紅色", "黑色"],
+                answer: "紅色"
+            },
+            {
+                question: "司馬遷幫五顆星星取了什麼名字？",
+                options: ["日、月、星、雲、風", "金星、木星、水星、火星、土星", "春、夏、秋、冬、風"],
+                answer: "金星、木星、水星、火星、土星"
+            },
+            {
+                question: "土星對應的顏色是什麼？",
+                options: ["黃色", "白色", "綠色"],
+                answer: "黃色"
+            },
+            {
+                question: "為什麼古代人看不到天王星和海王星？",
+                options: ["太小了", "太遙遠了", "太快了"],
+                answer: "太遙遠了"
             }
         ];
 
@@ -247,7 +306,7 @@
             
             let optionsHTML = '';
             q.options.forEach(option => {
-                optionsHTML += `<button class="quiz-option w-full text-left bg-slate-700 p-3 rounded-lg hover:bg-slate-600" data-question="${index}" data-answer="${option}">${option}</button>`;
+                optionsHTML += `<button class="quiz-option w-full text-left bg-slate-700 p-3 rounded-lg" data-question="${index}" data-answer="${option}">${option}</button>`;
             });
             
             let formattedQuestion = '';
@@ -271,7 +330,7 @@
 
         // 測驗邏輯
         quizContainer.addEventListener('click', function(e) {
-            if (e.target.classList.contains('quiz-option')) {
+            if (e.target.classList.contains('quiz-option') && !e.target.disabled) {
                 const questionIndex = e.target.dataset.question;
                 const selectedAnswer = e.target.dataset.answer;
                 const correctAnswer = quizData[questionIndex].answer;
@@ -281,7 +340,6 @@
 
                 allOptions.forEach(btn => {
                     btn.disabled = true; // 回答後禁用所有按鈕
-                    btn.classList.remove('hover:bg-slate-600');
                     if(btn.dataset.answer === correctAnswer) {
                         btn.style.backgroundColor = '#22c55e'; // 正確答案變綠色
                     }
@@ -298,9 +356,48 @@
             }
         });
         
-        // 動態填入標題的注音
+        // 重新作答邏輯
+        const resetBtn = document.getElementById('reset-quiz-btn');
+        resetBtn.addEventListener('click', function() {
+            const allQuestionBlocks = document.querySelectorAll('.question-block');
+            allQuestionBlocks.forEach(block => {
+                const allOptions = block.querySelectorAll('.quiz-option');
+                const resultText = block.querySelector('.result-text');
+
+                // 重置選項按鈕
+                allOptions.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.backgroundColor = ''; // 恢復預設顏色
+                });
+
+                // 清除結果文字
+                resultText.textContent = '';
+            });
+        });
+        
+        // --- 動態填入內容與注音 ---
+
+        // 標題
         document.getElementById('main-title').innerHTML = formatZhuyin("星星的名字故事", "ㄒㄧㄥ ㄒㄧㄥ ˙ㄉㄜ ㄇㄧㄥˊ ㄗˋ ㄍㄨˋ ㄕˋ");
         document.getElementById('quiz-title').innerHTML = formatZhuyin("星際小測驗", "ㄒㄧㄥ ㄐㄧˋ ㄒㄧㄠˇ ㄘㄜˋ ㄧㄢˋ");
+        
+        // 天文閱讀區 (移除注音)
+        document.getElementById('reading-title').innerHTML = `🌟 小博士 天文閱讀區 🌟`;
+        document.getElementById('wuxing-title').innerHTML = `東方文化中的「五行」和五個顏色對照：`;
+        document.getElementById('wuxing-mu').innerHTML = `木 = 青（像綠色的樹木）`;
+        document.getElementById('wuxing-huo').innerHTML = `火 = 赤（紅色，像火焰）`;
+        document.getElementById('wuxing-tu').innerHTML = `土 = 黃（像土地的顏色）`;
+        document.getElementById('wuxing-jin').innerHTML = `金 = 白（像金屬發亮的白光）`;
+        document.getElementById('wuxing-shui').innerHTML = `水 = 黑（像深深的水色）`;
+        
+        document.getElementById('naming-title').innerHTML = `中文命名的由來：`;
+        document.getElementById('naming-p1').innerHTML = `很久以前，人們觀察天空，看到太陽、月亮，還有五顆會移動的星星。`;
+        document.getElementById('naming-p2').innerHTML = `西漢的天文學家司馬遷，把這五顆星星和「五行」的想法連在一起，取了名字： 金星、木星、水星、火星、土星。`;
+        document.getElementById('naming-p3').innerHTML = `但是，因為古代的觀測工具有限，當時的人們還不知道有後來才被發現的天王星、海王星和冥王星。`;
+        
+        document.getElementById('uranus-info').innerHTML = `→  天王星（1781 發現） : 清朝乾隆年間，最早翻譯為「歲星」之外的新星，後來在清末被定名為 天王星。`;
+        document.getElementById('neptune-info').innerHTML = `→  海王星（1846 發現） : 清朝咸豐年間，西方傳入中國後翻譯為 海王星。`;
+        document.getElementById('pluto-info').innerHTML = `→  冥王星（1930 發現）: 民國時期，由天文學家馬仲華（北京大學教授）等人翻譯為 冥王星。`;
 
     </script>
 </body>
