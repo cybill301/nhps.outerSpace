@@ -124,34 +124,50 @@
             background-color: #4a4a8a;
         }
 
-        /* --- 手機版響應式設計 (Responsive Design) --- */
+        /* --- 手機版響應式設計 (Responsive Design) - 全面重做 --- */
         @media (max-width: 640px) {
             /* 縮小主標題和副標題 */
             #main-title {
-                font-size: 2.25rem; /* 接近 text-4xl */
-                line-height: 2.5rem;
+                font-size: 2rem; /* 再次縮小以適應窄螢幕 */
+                line-height: 2.4rem;
             }
              header p {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
 
-            /* 增加卡片高度，縮小卡片標題字體 */
+            /* 增加卡片高度，並大幅縮小卡片標題字體 */
             .card-container {
-                height: 18rem; /* 增加高度以容納內容 */
+                height: 16rem; /* 調整高度 */
             }
             .card-front h2, .card-back h3 {
-                font-size: 1.875rem; /* text-3xl */
+                font-size: 1.6rem; /* 大幅縮小行星名稱字體 */
             }
              .card-back p {
-                font-size: 0.95rem; /* 微調內文字體 */
+                font-size: 0.9rem; /* 縮小卡片背面故事文字 */
+                line-height: 1.6; /* 增加行高，提升易讀性 */
+            }
+
+            /* 專為手機優化注音排版 */
+            ruby {
+                margin: 0 0.9em 0 0.1em; /* 縮小國字右邊的空間 */
+            }
+
+            rt {
+                right: -0.8em; /* 調整注音位置以匹配 */
+                font-size: 0.38em; /* 微調注音大小 */
+            }
+            
+            .tone {
+                right: -1.2em; /* 調整聲調位置以匹配 */
+                font-size: 0.42em; /* 微調聲調大小 */
             }
 
             /* 縮小閱讀區和測驗區的標題與字體 */
             #reading-section h2, #quiz-section h2 {
-                font-size: 1.875rem; /* text-3xl */
+                font-size: 1.75rem;
             }
             #reading-section, #quiz-section {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 padding: 1rem;
             }
         }
@@ -436,6 +452,7 @@
     </script>
 </body>
 </html>
+
 
 
 
