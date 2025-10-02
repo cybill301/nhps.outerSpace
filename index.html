@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星球命名故事 (互動式)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0a0a2a; /* 深藍色星空背景 */
+            color: #f0f0f0;
+        }
+        /* 灑上一些星星背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
+            background-size: 40px 40px, 40px 40px;
+            background-position: 0 0, 20px 20px;
+            animation: twinkle 5s infinite linear;
+            z-index: -1;
+        }
+        @keyframes twinkle {
+            from { opacity: 0.3; }
+            to { opacity: 0.7; }
+        }
+
+        /* 翻轉卡片效果 */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.7s;
+            transform-style: preserve-3d;
+        }
+        .card-container.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .card-front {
+            background: linear-gradient(145deg, #2a2a6a, #1a1a4a);
+            border: 2px solid #4a4a8a;
+            cursor: pointer;
+        }
+        .card-back {
+            background: linear-gradient(145deg, #3a3a7a, #2a2a5a);
+            border: 2px solid #5a5a9a;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+
+        /* 注音符號與聲調樣式 - 最終修正版 */
+        ruby {
+            position: relative;
+            display: inline-block;
+            /* 讓父層(h1, p)決定字體大小 */
+            padding-right: 1em; /* 預留給注音和聲調的空間 */
+            margin: 0 0.15em;
+            vertical-align: middle;
+        }
+
+        rt {
+            position: absolute;
+            top: 50%;
+            right: 0.5em; /* 將注音放在預留空間的中間 */
+            transform: translateY(-50%);
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            -webkit-writing-mode: vertical-rl;
+            -webkit-text-orientation: upright;
+            font-size: 0.4em; /* 注音字體縮小 */
+            color: #c0c0ff;
+            letter-spacing: 0.1em;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        .tone {
+            position: absolute;
+            top: 50%;
+            right: 0.1em; /* 將聲調放在最右邊 */
+            transform: translateY(-50%);
+            font-size: 0.45em; /* 聲調符號大小 */
+            color: #c0c0ff;
+        }
+        
+        /* 標點符號樣式 */
+        .punct {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.2em;
+            font-size: inherit; /* 繼承父層字體大小 */
+        }
+
+        .quiz-option {
+            transition: all 0.2s ease-in-out;
+        }
+        .quiz-option:hover {
+            transform: scale(1.05);
+            background-color: #4a4a8a;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 id="main-title" class="text-4xl sm:text-5xl font-bold text-yellow-300 mb-2">
+                <!-- JavaScript will populate this -->
+            </h1>
+            <p class="text-lg text-gray-300">哈囉<span class="punct">，</span>小朋友<span class="punct">！</span>點擊下方的行星卡片<span class="punct">，</span>來看看它名字背後的故事吧<span class="punct">！</span></p>
+        </header>
+
+        <!-- 行星卡片區 -->
+        <main id="planets-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <!-- JavaScript 會在這裡生成行星卡片 -->
+        </main>
+
+        <!-- 小測驗區 -->
+        <section id="quiz-section" class="mt-16 bg-slate-800/50 p-6 rounded-2xl max-w-3xl mx-auto">
+            <h2 id="quiz-title" class="text-3xl font-bold text-center mb-6 text-yellow-300">
+                <!-- JavaScript will populate this -->
+            </h2>
+            <div id="quiz-container" class="space-y-8">
+                <!-- JavaScript 會在這裡生成測驗問題 -->
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 text-gray-500">
+            <p>有趣的宇宙<span class="punct">，</span>等著你去發現喔<span class="punct">！</span></p>
+        </footer>
+    </div>
+
+    <script>
+        const planetsData = [
+            { name: "水星", zhuyin: "ㄕㄨㄟˇ ㄒㄧㄥ", eng: "Mercury", color: "bg-gray-400", story: "在羅馬神話裡，有一位跑得非常快的信差之神，叫做「墨丘利」。他的腳上有一雙長了翅膀的特別鞋子，可以咻一下地飛到任何地方。水星是太陽系裡跑得最快的一顆行星，所以人們就用他的名字來稱呼它了。" },
+            { name: "金星", zhuyin: "ㄐㄧㄣ ㄒㄧㄥ", eng: "Venus", color: "bg-yellow-200", story: "「維納斯」是羅馬神話中最有名的愛與美之神，她非常的美麗。金星是夜空中除了月亮之外最亮的一顆星，看起來就像一顆閃閃發光的鑽石，所以就用了最美麗的女神「維納斯」的名字來命名。" },
+            { name: "地球", zhuyin: "ㄉㄧˋ ㄑㄧㄡˊ", eng: "Earth", color: "bg-blue-500", story: "我們所居住的這顆美麗藍色星球，它的名字很特別喔！它不是來自羅馬或希臘神話。地球的英文名字 \"Earth\"，是從古老的日耳曼語演變而來的，意思就是「土地」或是「地面」。" },
+            { name: "火星", zhuyin: "ㄏㄨㄛˇ ㄒㄧㄥ", eng: "Mars", color: "bg-red-500", story: "「馬爾斯」是羅馬神話中勇猛的「戰神」。火星的表面因為有很多紅色的沙子和石頭，所以整顆星球看起來都紅通通的，就像火焰的顏色一樣。因此，人們就用英勇的戰神「馬爾斯」來為它命名。" },
+            { name: "木星", zhuyin: "ㄇㄨˋ ㄒㄧㄥ", eng: "Jupiter", color: "bg-orange-400", story: "「朱比特」是羅馬神話裡的「眾神之王」，就像是所有神仙的國王一樣。木星是太陽系行星家族中的「巨無霸」，體積比其他所有行星加起來還要大！所以要用最有氣勢的眾神之王「朱比特」來命名才行！" },
+            { name: "土星", zhuyin: "ㄊㄨˇ ㄒㄧㄥ", eng: "Saturn", color: "bg-yellow-500", story: "「薩圖恩」是羅馬神話中的「農業之神」。土星最特別的地方，就是它身上那一圈美麗的「行星環」，讓它看起來就像戴著一個漂亮的呼拉圈。在古代，土星是人們用肉眼能看到最遠的行星，所以就用了這位重要的神來命名。" },
+            { name: "天王星", zhuyin: "ㄊㄧㄢ ㄨㄤˊ ㄒㄧㄥ", eng: "Uranus", color: "bg-cyan-300", story: "這是科學家用望遠鏡才發現的行星。它的名字來自希臘神話中的「天空之神」——烏拉諾斯。他是天空的化身，也是眾神之王朱比特的爺爺喔！用天空之神來為這顆淡藍色的星球命名，是不是很夢幻呢？" },
+            { name: "海王星", zhuyin: "ㄏㄞˇ ㄨㄤˊ ㄒㄧㄥ", eng: "Neptune", color: "bg-blue-700", story: "海王星是一顆非常漂亮的深藍色星球，就像一片浩瀚又神秘的大海洋。所以，人們就用了羅馬神話中掌管海洋的「海神」——尼普頓來為它命名。神話裡的海神手上總是拿著一把強大的三叉戟。" },
+            { name: "冥王星", zhuyin: "ㄇㄧㄥˊ ㄨㄤˊ ㄒㄧㄥ", eng: "Pluto", color: "bg-indigo-300", story: "「普魯托」是羅馬神話中，掌管遙遠又神秘的地底世界的神。因為冥王星距離太陽非常遙遠，那裡又冷又暗，所以人們就用了冥王「普魯托」的名字來稱呼它。現在它被歸類為「矮行星」喔！" }
+        ];
+
+        const quizData = [
+            {
+                question: "跑得最快的「信差之神」，是哪顆星的名字由來？",
+                options: ["金星", "水星", "火星"],
+                answer: "水星"
+            },
+            {
+                question: "太陽系中最大顆的「巨無霸」行星，是用哪位神仙的名字命名的？",
+                options: ["戰神馬爾斯", "海神尼普頓", "眾神之王朱比特"],
+                answer: "眾神之王朱比特"
+            },
+            {
+                question: "哪一顆行星的名字不是來自神話故事，而是「土地」的意思？",
+                options: ["土星", "地球", "天王星"],
+                answer: "地球"
+            }
+        ];
+
+        const planetsGrid = document.getElementById('planets-grid');
+        const quizContainer = document.getElementById('quiz-container');
+
+        // 核心功能：格式化注音與聲調
+        function formatZhuyin(name, zhuyin) {
+            const nameChars = name.split('');
+            const zhuyinParts = zhuyin.split(' ');
+            let html = '';
+
+            nameChars.forEach((char, i) => {
+                const zhuyinPart = zhuyinParts[i] || '';
+                // 只匹配需要獨立出來的二、三、四聲
+                const toneMatch = zhuyinPart.match(/[ˇˊˋ]/);
+
+                if (toneMatch) {
+                    const tone = toneMatch[0];
+                    const phonetics = zhuyinPart.replace(tone, '');
+                    html += `<ruby>${char}<rt>${phonetics}</rt><span class="tone">${tone}</span></ruby>`;
+                } else {
+                    // 處理一聲（無聲調）和輕聲（˙）
+                    html += `<ruby>${char}<rt>${zhuyinPart}</rt></ruby>`;
+                }
+            });
+            return html;
+        }
+
+        // 生成行星卡片
+        planetsData.forEach(planet => {
+            const zhuyinRuby = formatZhuyin(planet.name, planet.zhuyin);
+
+            const cardContainer = document.createElement('div');
+            cardContainer.className = 'card-container h-64';
+            cardContainer.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="w-24 h-24 ${planet.color} rounded-full mb-4 shadow-lg flex items-center justify-center">
+                           <!-- 可以放SVG圖標等 -->
+                        </div>
+                        <h2 class="text-3xl font-bold">${zhuyinRuby}</h2>
+                    </div>
+                    <div class="card-back">
+                        <div class="flex flex-col h-full p-2 text-left">
+                            <h3 class="text-xl font-bold mb-2 text-center">${zhuyinRuby}</h3>
+                            <p class="text-base leading-relaxed tracking-wider flex-grow">${planet.story}</p>
+                            <p class="text-gray-400 text-sm mt-2 text-right">英文名字: ${planet.eng}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cardContainer.addEventListener('click', () => {
+                cardContainer.classList.toggle('is-flipped');
+            });
+            planetsGrid.appendChild(cardContainer);
+        });
+
+        // 生成測驗問題
+        quizData.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-block';
+            
+            let optionsHTML = '';
+            q.options.forEach(option => {
+                optionsHTML += `<button class="quiz-option w-full text-left bg-slate-700 p-3 rounded-lg hover:bg-slate-600" data-question="${index}" data-answer="${option}">${option}</button>`;
+            });
+            
+            let formattedQuestion = '';
+            q.question.split('').forEach(char => {
+                 if ('，。！？「」'.includes(char)) {
+                    formattedQuestion += `<span class="punct">${char}</span>`;
+                } else {
+                    formattedQuestion += char;
+                }
+            });
+
+            questionDiv.innerHTML = `
+                <p class="text-lg mb-4">${index + 1}. ${formattedQuestion}</p>
+                <div class="options-grid grid grid-cols-1 gap-3">
+                    ${optionsHTML}
+                </div>
+                <p class="result-text mt-2 h-6 text-green-400"></p>
+            `;
+            quizContainer.appendChild(questionDiv);
+        });
+
+        // 測驗邏輯
+        quizContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('quiz-option')) {
+                const questionIndex = e.target.dataset.question;
+                const selectedAnswer = e.target.dataset.answer;
+                const correctAnswer = quizData[questionIndex].answer;
+                const questionBlock = e.target.closest('.question-block');
+                const resultText = questionBlock.querySelector('.result-text');
+                const allOptions = questionBlock.querySelectorAll('.quiz-option');
+
+                allOptions.forEach(btn => {
+                    btn.disabled = true; // 回答後禁用所有按鈕
+                    btn.classList.remove('hover:bg-slate-600');
+                    if(btn.dataset.answer === correctAnswer) {
+                        btn.style.backgroundColor = '#22c55e'; // 正確答案變綠色
+                    }
+                });
+
+                if (selectedAnswer === correctAnswer) {
+                    resultText.textContent = '答對了，你好棒！';
+                    resultText.style.color = '#4ade80';
+                } else {
+                    e.target.style.backgroundColor = '#ef4444'; // 錯誤答案變紅色
+                    resultText.textContent = `答錯了，正確答案是「${correctAnswer}」`;
+                    resultText.style.color = '#f87171';
+                }
+            }
+        });
+        
+        // 動態填入標題的注音
+        document.getElementById('main-title').innerHTML = formatZhuyin("星星的名字故事", "ㄒㄧㄥ ㄒㄧㄥ ˙ㄉㄜ ㄇㄧㄥˊ ㄗˋ ㄍㄨˋ ㄕˋ");
+        document.getElementById('quiz-title').innerHTML = formatZhuyin("星際小測驗", "ㄒㄧㄥ ㄐㄧˋ ㄒㄧㄠˇ ㄘㄜˋ ㄧㄢˋ");
+
+    </script>
+</body>
+</html>
