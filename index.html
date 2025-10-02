@@ -122,6 +122,38 @@
             transform: scale(1.05);
             background-color: #4a4a8a;
         }
+
+        /* --- 手機版響應式設計 (Responsive Design) --- */
+        @media (max-width: 640px) {
+            /* 縮小主標題和副標題 */
+            #main-title {
+                font-size: 2.25rem; /* 接近 text-4xl */
+                line-height: 2.5rem;
+            }
+             header p {
+                font-size: 1rem;
+            }
+
+            /* 增加卡片高度，縮小卡片標題字體 */
+            .card-container {
+                height: 18rem; /* 增加高度以容納內容 */
+            }
+            .card-front h2, .card-back h3 {
+                font-size: 1.875rem; /* text-3xl */
+            }
+             .card-back p {
+                font-size: 0.95rem; /* 微調內文字體 */
+            }
+
+            /* 縮小閱讀區和測驗區的標題與字體 */
+            #reading-section h2, #quiz-section h2 {
+                font-size: 1.875rem; /* text-3xl */
+            }
+            #reading-section, #quiz-section {
+                font-size: 0.95rem;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -402,6 +434,7 @@
     </script>
 </body>
 </html>
+
 
 
 
