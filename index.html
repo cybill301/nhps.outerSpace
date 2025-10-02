@@ -71,41 +71,33 @@
             overflow-y: auto;
         }
 
-        /* 注音符號與聲調樣式 - 針對 iOS 裝置的相容性修正 */
-        ruby {
-            position: relative;
-            display: inline-block;
-            /* 移除 padding-right，改用 margin-right 為注音騰出空間，避免與下一個字重疊 */
-            margin: 0 1em 0 0.15em; 
-            vertical-align: middle;
+        /* --- 全新注音排版系統 (使用 Flexbox) --- */
+        .zhuyin-wrap {
+            display: inline-flex; /* 使用 Flexbox 進行排版 */
+            align-items: center;  /* 垂直置中對齊 */
+            line-height: 1.2;     /* 避免繼承的行高影響排版 */
+            vertical-align: middle; /* 確保與旁邊的文字對齊 */
         }
-
-        rt {
-            position: absolute;
-            top: 50%;
-            /* 使用負值 'right' 將注音定位在國字的右側外部，以解決 iOS 上的定位錯誤 */
-            right: -1em;
-            transform: translateY(-50%);
+        .base-char {
+            /* 國字本身不需要特別樣式，它會繼承父層的字體大小 */
+        }
+        .phonetic {
             writing-mode: vertical-rl;
             text-orientation: upright;
             -webkit-writing-mode: vertical-rl;
             -webkit-text-orientation: upright;
-            font-size: 0.4em; /* 注音字體縮小 */
+            font-size: 0.45em; /* 調整注音大小 */
             color: #c0c0ff;
+            margin-left: 0.1em; /* 與國字的間距 */
             letter-spacing: 0.1em;
-            line-height: 1;
-            white-space: nowrap;
         }
-        
         .tone {
-            position: absolute;
-            top: 50%;
-            /* 使用更大的負值，將聲調放在注音的右邊 */
-            right: -1.2em; 
-            transform: translateY(-50%);
-            font-size: 0.45em; /* 聲調符號大小 */
+            font-size: 0.5em; /* 調整聲調大小 */
             color: #c0c0ff;
+            margin-left: 0.05em; /* 與注音的間距 */
+            line-height: 1;
         }
+        /* --- 舊的 ruby 樣式已完全移除 --- */
         
         /* 標點符號樣式 */
         .punct {
@@ -113,7 +105,7 @@
             align-items: center;
             justify-content: center;
             padding: 0 0.2em;
-            font-size: inherit; /* 繼承父層字體大小 */
+            font-size: inherit;
         }
 
         .quiz-option {
@@ -124,11 +116,11 @@
             background-color: #4a4a8a;
         }
 
-        /* --- 手機版響應式設計 (Responsive Design) - 全面重做 --- */
+        /* --- 手機版響應式設計 (Responsive Design) - 使用新版注音系統 --- */
         @media (max-width: 640px) {
             /* 縮小主標題和副標題 */
             #main-title {
-                font-size: 2rem; /* 再次縮小以適應窄螢幕 */
+                font-size: 2rem; 
                 line-height: 2.4rem;
             }
              header p {
@@ -137,29 +129,22 @@
 
             /* 增加卡片高度，並大幅縮小卡片標題字體 */
             .card-container {
-                height: 16rem; /* 調整高度 */
+                height: 16rem; 
             }
             .card-front h2, .card-back h3 {
-                font-size: 1.6rem; /* 大幅縮小行星名稱字體 */
+                font-size: 1.6rem;
             }
              .card-back p {
-                font-size: 0.9rem; /* 縮小卡片背面故事文字 */
-                line-height: 1.6; /* 增加行高，提升易讀性 */
+                font-size: 0.9rem;
+                line-height: 1.6;
             }
 
-            /* 專為手機優化注音排版 */
-            ruby {
-                margin: 0 0.9em 0 0.1em; /* 縮小國字右邊的空間 */
+            /* 專為手機微調新版注音的大小 */
+            .phonetic {
+                font-size: 0.42em;
             }
-
-            rt {
-                right: -0.8em; /* 調整注音位置以匹配 */
-                font-size: 0.38em; /* 微調注音大小 */
-            }
-            
             .tone {
-                right: -1.2em; /* 調整聲調位置以匹配 */
-                font-size: 0.42em; /* 微調聲調大小 */
+                font-size: 0.48em;
             }
 
             /* 縮小閱讀區和測驗區的標題與字體 */
@@ -252,35 +237,35 @@
             { name: "木星", zhuyin: "ㄇㄨˋ ㄒㄧㄥ", eng: "Jupiter", color: "bg-orange-400", story: "「朱比特」是羅馬神話裡的「眾神之王」，就像是所有神仙的國王一樣。木星是太陽系行星家族中的「巨無霸」，體積比其他所有行星加起來還要大！所以要用最有氣勢的眾神之王「朱比特」來命名才行！" },
             { name: "土星", zhuyin: "ㄊㄨˇ ㄒㄧㄥ", eng: "Saturn", color: "bg-yellow-500", story: "「薩圖恩」是羅馬神話中的「農業之神」。土星最特別的地方，就是它身上那一圈美麗的「行星環」，讓它看起來就像戴著一個漂亮的呼拉圈。在古代，土星是人們用肉眼能看到最遠的行星，所以就用了這位重要的神來命名。" },
             { name: "天王星", zhuyin: "ㄊㄧㄢ ㄨㄤˊ ㄒㄧㄥ", eng: "Uranus", color: "bg-cyan-300", story: "這是科學家用望遠鏡才發現的行星。它的名字來自希臘神話中的「天空之神」——烏拉諾斯。他是天空的化身，也是眾神之王朱比特的爺爺喔！用天空之神來為這顆淡藍色的星球命名，是不是很夢幻呢？" },
-            { name: "海王星", zhuyin: "ㄏㄞˇ ㄨㄤˊ ㄒㄧㄥ", eng: "Neptune", color: "bg-blue-900", story: "海王星是一顆非常漂亮的深藍色星球，就像一片浩瀚又神秘的大海洋。所以，人們就用了羅馬神話中掌管海洋的「海神」——尼普頓來為它命名。神話裡的海神手上總是拿著一把強大的三叉戟。" },
-            { name: "冥王星", zhuyin: "ㄇㄧㄥˊ ㄨㄤˊ ㄒㄧㄥ", eng: "Pluto", color: "bg-indigo-300", story: "「普魯托」是羅馬神話中，掌管遙遠又神秘的地底世界的神。因為冥王星距離太陽非常遙遠，那裡又冷又暗，所以人們就用了冥王「普魯托」的名字來稱呼它。PS: 在2006年，冥王星被重新分類為「矮行星」。" }
+            { name: "海王星", zhuyin: "ㄏㄞˇ ㄨㄤˊ ㄒㄧㄥ", eng: "Neptune", color: "bg-blue-700", story: "海王星是一顆非常漂亮的深藍色星球，就像一片浩瀚又神秘的大海洋。所以，人們就用了羅馬神話中掌管海洋的「海神」——尼普頓來為它命名。神話裡的海神手上總是拿著一把強大的三叉戟。" },
+            { name: "冥王星", zhuyin: "ㄇㄧㄥˊ ㄨㄤˊ ㄒㄧㄥ", eng: "Pluto", color: "bg-indigo-300", story: "「普魯托」是羅馬神話中，掌管遙遠又神秘的地底世界的神。因為冥王星距離太陽非常遙遠，那裡又冷又暗，所以人們就用了冥王「普魯托」的名字來稱呼它。現在它被歸類為「矮行星」喔！" }
         ];
 
         const quizData = [
             {
-                question: "跑得最快的「 信 差 之 神 」，是哪顆星的名字由來？",
-                options: ["金 星 Venus", "水 星 Mercury", "火 星 Mars"],
-                answer: "水 星 Mercury"
+                question: "跑得最快的「信差之神」，是哪顆星的名字由來？",
+                options: ["金 星", "水 星", "火 星"],
+                answer: "水 星"
             },
             {
                 question: "太陽系中最大顆的「巨 無 霸」行星，是用哪位神仙的名字命名的？",
-                options: ["戰神 馬爾斯Mars", "海神 尼普頓Neptune", "眾神之王 朱比特Jupiter"],
-                answer: "眾神之王 朱比特Jupiter"
+                options: ["戰神 馬爾斯", "海神 尼普頓", "眾神之王 朱比特"],
+                answer: "眾神之王 朱比特"
             },
             {
-                question: "哪一顆行星的名字不是來自神話故事，而是「土地」的意思？",
-                options: ["土 星 Saturn", "地 球 Earth", "天王星 Uranus"],
-                answer: "地 球 Earth"
+                question: "哪一顆行星的名字不是來自神話故事，而是「土 地」的意思？",
+                options: ["土 星", "地 球", "天 王 星"],
+                answer: "地 球"
             },
             {
-                question: "哪一種顏色代表「火」？",
-                options: ["黃 色", "紅 色", "黑 色"],
-                answer: "紅 色"
+                question: "哪一種 顏色 代表「火」？",
+                options: ["黃色", "紅色", "黑色"],
+                answer: "紅色"
             },
             {
-                question: "中國司馬遷幫五顆星星取了什麼名字？",
-                options: ["日、月、星、雲、風", "金星、木星、水星、火星、土星", "春、夏、秋、冬、風"],
-                answer: "金星、木星、水星、火星、土星"
+                question: "司馬遷幫五顆星星取了什麼名字？",
+                options: ["日、月、星、雲、風", "金 星、木 星、水 星、火 星、土 星", "春、夏、秋、冬、風"],
+                answer: "金 星、木 星、水 星、火 星、土 星"
             },
             {
                 question: "土星對應的顏色是什麼？",
@@ -288,16 +273,16 @@
                 answer: "黃 色"
             },
             {
-                question: "為什麼古代人看不到天王星和海王星？",
-                options: ["星球的體積太小了", "他們和地球的距離太遙遠了", "星球轉太快了"],
-                answer: "他們和地球的距離太遙遠了"
+                question: "為什麼古代人看不到 天王星 和 海王星？",
+                options: ["星球太小了", "星球距離地球太遙遠了", "星球跑太快了"],
+                answer: "星球距離地球太遙遠了"
             }
         ];
 
         const planetsGrid = document.getElementById('planets-grid');
         const quizContainer = document.getElementById('quiz-container');
 
-        // 核心功能：格式化注音與聲調
+        // --- 全新核心功能：使用 Flexbox 格式化注音 (取代舊的 ruby 寫法) ---
         function formatZhuyin(name, zhuyin) {
             const nameChars = name.split('');
             const zhuyinParts = zhuyin.split(' ');
@@ -307,15 +292,21 @@
                 const zhuyinPart = zhuyinParts[i] || '';
                 // 只匹配需要獨立出來的二、三、四聲
                 const toneMatch = zhuyinPart.match(/[ˇˊˋ]/);
+                let phonetics, toneHTML = '';
 
                 if (toneMatch) {
-                    const tone = toneMatch[0];
-                    const phonetics = zhuyinPart.replace(tone, '');
-                    html += `<ruby>${char}<rt>${phonetics}</rt><span class="tone">${tone}</span></ruby>`;
+                    toneHTML = `<span class="tone">${toneMatch[0]}</span>`;
+                    phonetics = zhuyinPart.replace(toneMatch[0], '');
                 } else {
-                    // 處理一聲（無聲調）和輕聲（˙）
-                    html += `<ruby>${char}<rt>${zhuyinPart}</rt></ruby>`;
+                    phonetics = zhuyinPart;
                 }
+                
+                // 使用 span 和 Flexbox 來組合國字、注音和聲調
+                html += `<span class="zhuyin-wrap">` +
+                          `<span class="base-char">${char}</span>` +
+                          `<span class="phonetic">${phonetics}</span>` +
+                          `${toneHTML}` +
+                        `</span>`;
             });
             return html;
         }
@@ -350,34 +341,37 @@
         });
 
         // 生成測驗問題
-        quizData.forEach((q, index) => {
-            const questionDiv = document.createElement('div');
-            questionDiv.className = 'question-block';
-            
-            let optionsHTML = '';
-            q.options.forEach(option => {
-                optionsHTML += `<button class="quiz-option w-full text-left bg-slate-700 p-3 rounded-lg" data-question="${index}" data-answer="${option}">${option}</button>`;
-            });
-            
-            let formattedQuestion = '';
-            q.question.split('').forEach(char => {
-                 if ('，。！？「」'.includes(char)) {
-                    formattedQuestion += `<span class="punct">${char}</span>`;
-                } else {
-                    formattedQuestion += char;
-                }
-            });
+        function generateQuiz() {
+             quizContainer.innerHTML = ''; // 清空舊題目
+             quizData.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-block';
+                
+                let optionsHTML = '';
+                q.options.forEach(option => {
+                    optionsHTML += `<button class="quiz-option w-full text-left bg-slate-700 p-3 rounded-lg" data-question="${index}" data-answer="${option}">${option}</button>`;
+                });
+                
+                let formattedQuestion = '';
+                q.question.split('').forEach(char => {
+                     if ('，。！？「」'.includes(char)) {
+                        formattedQuestion += `<span class="punct">${char}</span>`;
+                    } else {
+                        formattedQuestion += char;
+                    }
+                });
 
-            questionDiv.innerHTML = `
-                <p class="text-lg mb-4">${index + 1}. ${formattedQuestion}</p>
-                <div class="options-grid grid grid-cols-1 gap-3">
-                    ${optionsHTML}
-                </div>
-                <p class="result-text mt-2 h-6 text-green-400"></p>
-            `;
-            quizContainer.appendChild(questionDiv);
-        });
-
+                questionDiv.innerHTML = `
+                    <p class="text-lg mb-4">${index + 1}. ${formattedQuestion}</p>
+                    <div class="options-grid grid grid-cols-1 gap-3">
+                        ${optionsHTML}
+                    </div>
+                    <p class="result-text mt-2 h-6 text-green-400"></p>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+       
         // 測驗邏輯
         quizContainer.addEventListener('click', function(e) {
             if (e.target.classList.contains('quiz-option') && !e.target.disabled) {
@@ -408,59 +402,35 @@
         
         // 重新作答邏輯
         const resetBtn = document.getElementById('reset-quiz-btn');
-        resetBtn.addEventListener('click', function() {
-            const allQuestionBlocks = document.querySelectorAll('.question-block');
-            allQuestionBlocks.forEach(block => {
-                const allOptions = block.querySelectorAll('.quiz-option');
-                const resultText = block.querySelector('.result-text');
-
-                // 重置選項按鈕
-                allOptions.forEach(btn => {
-                    btn.disabled = false;
-                    btn.style.backgroundColor = ''; // 恢復預設顏色
-                });
-
-                // 清除結果文字
-                resultText.textContent = '';
-            });
-        });
+        resetBtn.addEventListener('click', generateQuiz);
         
-        // --- 動態填入內容與注音 ---
-
+        // --- 頁面初始載入 ---
+        
         // 標題
-        document.getElementById('main-title').innerHTML = formatZhuyin("星星的命名故事", "ㄒㄧㄥ ㄒㄧㄥ ˙ㄉㄜ ㄇㄧㄥˋ ㄇㄧㄥˊ ㄍㄨˋ ㄕˋ");
+        document.getElementById('main-title').innerHTML = formatZhuyin("星星的名字故事", "ㄒㄧㄥ ㄒㄧㄥ ˙ㄉㄜ ㄇㄧㄥˊ ㄗˋ ㄍㄨˋ ㄕˋ");
         document.getElementById('quiz-title').innerHTML = formatZhuyin("星際小測驗", "ㄒㄧㄥ ㄐㄧˋ ㄒㄧㄠˇ ㄘㄜˋ ㄧㄢˋ");
         
         // 天文閱讀區 (移除注音)
-        document.getElementById('reading-title').innerHTML = `🌟小 博 士 天 文 閱 讀 區 `;
-        document.getElementById('wuxing-title').innerHTML = `東方文化中的「五 行」和五個顏色對照：`;
+        document.getElementById('reading-title').innerHTML = `🌟 小博士 天文閱讀區 🌟`;
+        document.getElementById('wuxing-title').innerHTML = `東方文化中的「五行」和五個顏色對照：`;
         document.getElementById('wuxing-mu').innerHTML = `木 = 青（綠色的樹木）`;
-        document.getElementById('wuxing-huo').innerHTML = `火 = 赤（紅色像火焰）`;
-        document.getElementById('wuxing-tu').innerHTML = `土 = 黃（泥土的顏色）`;
+        document.getElementById('wuxing-huo').innerHTML = `火 = 赤（紅色，像火焰一樣）`;
+        document.getElementById('wuxing-tu').innerHTML = `土 = 黃（土地、泥巴的顏色）`;
         document.getElementById('wuxing-jin').innerHTML = `金 = 白（像金屬發亮的白光）`;
-        document.getElementById('wuxing-shui').innerHTML = `水 = 黑（像深暗的水色）`;
+        document.getElementById('wuxing-shui').innerHTML = `水 = 黑（深暗的水色）`;
         
         document.getElementById('naming-title').innerHTML = `中文命名的由來：`;
-        document.getElementById('naming-p1').innerHTML = `很久以前，人們觀察天空，看到太陽、月亮，還有五顆會移動的星星；`;
-        document.getElementById('naming-p2').innerHTML = `西漢的天文學家司馬遷，把這五顆星星和「五 行」的想法連在一起，取了名字： 金星、木星、水星、火星、土星。`;
-        document.getElementById('naming-p3').innerHTML = `但是在古代，他們沒有像現在先進的望遠鏡來幫助觀察，當時的人們還不知道有後來才被發現的天王星、海王星和冥王星。`;
+        document.getElementById('naming-p1').innerHTML = `很久以前，人們觀察天空，看到太陽、月亮，還有五顆會移動的星星。西漢的天文學家司馬遷，把這五顆星星和「五行」的想法連在一起，取了名字： 金星、木星、水星、火星、土星。`;
+        document.getElementById('naming-p2').innerHTML = `以前的人，因為沒有先進的望遠鏡，只能看得到土星以內的行星（水星到土星）。天王星、海王星和冥王星這些更遠的星星，是後來有了更好的觀察工具和科技，才一個一個被發現的。`;
         
-        document.getElementById('uranus-info').innerHTML = `天王星（1781 發現） : 清朝乾隆年間，最早翻譯為「歲星」之外的新星，後來在清末被定名為 天王星。`;
-        document.getElementById('neptune-info').innerHTML = `海王星（1846 發現） : 清朝咸豐年間，西方傳入中國後翻譯為 海王星。`;
-        document.getElementById('pluto-info').innerHTML = `冥王星（1930 發現）: 民國時期，由天文學家馬仲華（北京大學教授）等人翻譯為 冥王星。`;
+        document.getElementById('uranus-info').innerHTML = `天王星（1781 發現）→ 清朝乾隆年間，最早翻譯為「歲星」之外的新星，後來在清末被定名為 天王星。`;
+        document.getElementById('neptune-info').innerHTML = `海王星（1846 發現）→ 清朝咸豐年間，西方傳入中國後翻譯為 海王星。`;
+        document.getElementById('pluto-info').innerHTML = `冥王星（1930 發現）→ 民國時期，由天文學家馬仲華（北京大學教授）等人翻譯為 冥王星。`;
+
+        // 首次載入時生成測驗
+        generateQuiz();
 
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
 
