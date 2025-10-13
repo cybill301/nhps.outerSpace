@@ -115,7 +115,19 @@
             transform: scale(1.05);
             background-color: #4a4a8a;
         }
-
+        
+        /* 分數彈跳視窗樣式 */
+        #score-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #score-modal > div {
+             transform: scale(0.95);
+             transition: transform 0.3s ease-in-out;
+        }
+        #score-modal:not(.hidden) > div {
+            transform: scale(1);
+        }
+        
         /* --- 手機版響應式設計 (Responsive Design) - 使用新版注音系統 --- */
         @media (max-width: 640px) {
             /* 縮小主標題和副標題 */
@@ -228,6 +240,15 @@
         </footer>
     </div>
 
+    <!-- 分數彈跳視窗 (Modal) -->
+    <div id="score-modal" class="fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50 hidden">
+        <div class="bg-slate-800 p-8 rounded-2xl text-center shadow-2xl border-2 border-yellow-300 w-11/12 max-w-md">
+            <h2 id="modal-title" class="text-3xl font-bold text-yellow-300 mb-4"></h2>
+            <p class="text-lg mb-6">你答對了 <span id="final-score" class="font-bold text-2xl text-cyan-300"></span> / 7 題</p>
+            <button id="close-modal-btn" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-6 rounded-lg">關閉</button>
+        </div>
+    </div>
+    
     <script>
         const planetsData = [
             { name: "水星", zhuyin: "ㄕㄨㄟˇ ㄒㄧㄥ", eng: "Mercury", color: "bg-gray-400", story: "在羅馬神話裡，有一位跑得非常快的信差之神，叫做「墨丘利」。他的腳上有一雙長了翅膀的特別鞋子，可以咻一下地飛到任何地方。水星是太陽系裡跑得最快的一顆行星，所以人們就用他的名字來稱呼它了。" },
@@ -281,6 +302,11 @@
 
         const planetsGrid = document.getElementById('planets-grid');
         const quizContainer = document.getElementById('quiz-container');
+        
+        // 計分相關變數
+        let score = 0;
+        let questionsAnswered = 0;
+        const totalQuestions = quizData.length;
 
         // --- 全新核心功能：使用 Flexbox 格式化注音 (取代舊的 ruby 寫法) ---
         function formatZhuyin(name, zhuyin) {
@@ -342,6 +368,8 @@
 
         // 生成測驗問題
         function generateQuiz() {
+             score = 0;
+             questionsAnswered = 0;
              quizContainer.innerHTML = ''; // 清空舊題目
              quizData.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
@@ -370,6 +398,24 @@
                 `;
                 quizContainer.appendChild(questionDiv);
             });
+        }
+
+        function showScoreModal() {
+            const modal = document.getElementById('score-modal');
+            const finalScoreSpan = document.getElementById('final-score');
+            const modalTitle = document.getElementById('modal-title');
+            
+            finalScoreSpan.textContent = score;
+            if (score === totalQuestions) {
+                modalTitle.textContent = '太厲害了！全對！';
+            } else if (score >= totalQuestions / 2) {
+                modalTitle.textContent = '測驗完成！';
+            } else {
+                 modalTitle.textContent = '再接再厲！';
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
        
         // 測驗邏輯
@@ -433,5 +479,6 @@
     </script>
 </body>
 </html>
+
 
 
