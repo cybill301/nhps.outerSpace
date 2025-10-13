@@ -446,9 +446,25 @@
             }
         });
         
-        // 重新作答邏輯
+        // 重新作答與關閉視窗邏輯
         const resetBtn = document.getElementById('reset-quiz-btn');
+        const modal = document.getElementById('score-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
         resetBtn.addEventListener('click', generateQuiz);
+        
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        // 點擊背景關閉視窗
+        modal.addEventListener('click', (e) => {
+            if(e.target.id === 'score-modal') {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        });
         
         // --- 頁面初始載入 ---
         
@@ -479,6 +495,7 @@
     </script>
 </body>
 </html>
+
 
 
 
